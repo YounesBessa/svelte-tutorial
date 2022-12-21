@@ -1,30 +1,69 @@
 <script>
-	export let name;
+  import Modal from "./Modal.svelte";
+	import AddPersonForm from "./AddPersonForm.svelte";
+
+  let showModal = false;
+
+  const toggleModal = () => {
+    showModal = !showModal;
+  };
+
+  let people = [
+    { name: "Mario", beltColor: "black", age: 45, id: 1 },
+    { name: "Luigi", beltColor: "green", age: 35, id: 2 },
+    { name: "Yoshi", beltColor: "orange", age: 25, id: 3 },
+  ];
+
+  const handleClick = (id) => {
+    // delete the person from people
+    people = people.filter((person) => person.id !== id);
+  };
+
+	const addPerson = (event) => {
+		// console.log(event.detail);
+		const person = event.detail;
+		people = [person, ...people];
+		showModal = false;
+	};
 </script>
 
+<Modal {showModal} on:click={toggleModal}>
+	<AddPersonForm on:addPerson={addPerson} />
+</Modal>
 <main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+  <button on:click={toggleModal}>Open Modal</button>
+  {#each people as person (person.id)}
+    <div>
+      <h4>{person.name}</h4>
+      {#if person.beltColor === "black"}
+        <p><strong>MASTER NINJA</strong></p>
+      {/if}
+      <p>{person.age} years old, {person.beltColor} belt.</p>
+      <button on:click={() => handleClick(person.id)}>Delete</button>
+    </div>
+  {:else}
+    <p>There are no people to show...</p>
+  {/each}
 </main>
 
 <style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
-	}
+  main {
+    text-align: center;
+    padding: 1em;
+    max-width: 240px;
+    margin: 0 auto;
+  }
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
+  h1 {
+    color: #ff3e00;
+    text-transform: uppercase;
+    font-size: 4em;
+    font-weight: 100;
+  }
 
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
+  @media (min-width: 640px) {
+    main {
+      max-width: none;
+    }
+  }
 </style>
